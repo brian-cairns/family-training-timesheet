@@ -266,7 +266,7 @@ calc.addEventListener('click', (e) => {
   console.log('click')
   hours = calculateHours()
   document.getElementById('totalHours').innerHTML = `${hours} Hours`
-  newForm.timesheet = timesheet
+  newForm.totalHours = hours
 })
 
 function calculateHours() {
@@ -314,7 +314,7 @@ function respond(data) {
   if (id) {
     showSuccess(id)
     let name = newForm.clientId	  
-    sendNotification(formId, name)	  
+    sendNotification(id, name)	  
   } else {
     showError(data.error)
   }
@@ -335,7 +335,7 @@ function showError(err) {
 }
 
 async function sendNotification(id, client) {
-  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?formId=${id}>Educational Consultation Summary</a>`
+  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}>Family Training Timesheet</a>`
   console.log(message)
   const url = 'https://pffm.azurewebsites.net/notices'
   let notification = {
