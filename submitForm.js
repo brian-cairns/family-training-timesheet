@@ -310,9 +310,9 @@ async function submitForm(data, form) {
 }
 
 function respond(data) {
-  let formId = data.formId
-  if (formId) {
-    showSuccess(formId)
+  let id = data.key
+  if (id) {
+    showSuccess(id)
     let name = newForm.clientId	  
     sendNotification(formId, name)	  
   } else {
@@ -320,11 +320,11 @@ function respond(data) {
   }
 }
 
-function showSuccess(formId) {
+function showSuccess(id) {
   document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
   printForm.style.display = 'inline';
   printForm.addEventListener('click', (e) => {
-  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?formId=${formId}`
+  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}`
   })
 }
 
