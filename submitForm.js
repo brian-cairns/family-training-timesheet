@@ -324,7 +324,7 @@ function showSuccess(id) {
   document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
   printForm.style.display = 'inline';
   printForm.addEventListener('click', (e) => {
-  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}`
+  location.href = `https://phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}`
   })
 }
 
