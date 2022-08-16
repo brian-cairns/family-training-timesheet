@@ -310,21 +310,23 @@ async function submitForm(data, form) {
 }
 
 function respond(data) {
-  let formId = data.formId
-  if (formId) {
-    showSuccess(formId)
-    let name = newForm.clientId	  
-    sendNotification(formId, name)	  
+  let id = data.key
+  if (id) {
+    showSuccess(id)
+    let name = newForm.clientName	  
+    sendNotification(id, name, 'family', 'not urgent')	  
+    sendNotification(id, newForm.staffName, 'family', 'not urgent')
+    sendNotification(id, 'admin', 'family', 'not urgent')
   } else {
     showError(data.error)
   }
 }
 
-function showSuccess(formId) {
+function showSuccess(id) {
   document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
   printForm.style.display = 'inline';
   printForm.addEventListener('click', (e) => {
-  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?formId=${formId}`
+  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}`
   })
 }
 
@@ -334,13 +336,15 @@ function showError(err) {
     document.getElementById('returnMessage').innerHTML = `An error occurred when submitting this form, which was ${err}. Please contact the administrator for help.`
 }
 
-async function sendNotification(id, client) {
-  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?formId=${id}>Educational Consultation Summary</a>`
+async function sendNotification(id, recipient, type, priority) {
+  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/family-training-timesheet?id=${id}>IISS Session Note</a>`
   console.log(message)
   const url = 'https://pffm.azurewebsites.net/notices'
   let notification = {
-    'name': client,
-    'notice' : message 
+    'name': recipient,
+    'notice': message,
+    'type': type,
+    'priority': priority
   }
   const header = {
       'Content-Type': 'application/json',
