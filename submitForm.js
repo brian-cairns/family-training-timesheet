@@ -266,7 +266,7 @@ calc.addEventListener('click', (e) => {
   console.log('click')
   hours = calculateHours()
   document.getElementById('totalHours').innerHTML = `${hours} Hours`
-  newForm.timesheet = timesheet
+  newForm.totalHours = hours
 })
 
 function calculateHours() {
