@@ -1,13 +1,25 @@
+//Create Functional Unit Class and Event Arrays
+
+let dates = [];
+let timeIns = [];
+let timeOuts = [];
+let ams = [];
+let pms = [];
+let PDs = [];
+let FTs = [];
+let supers = [];
+let timeRegEx = new RegExp('(1[0-2]|0?[1-9]):([0-5]?[0-9])/g') 
 class TimeEntry {
-    constructor(date, timeIn, timeOut, total, PD, FT, supervision) {
-        this.date = date;
-        this.timeIn = timeIn;
-        this.timeOut = timeOut;
-        this.total = total;
-        this.PD = PD
-        this.FT = FT
-        this.supervision = supervision
-    }
+    constructor(date, timeIn, timeOut, am, pm, total, activity) {
+      this.date = date;
+      this.timeIn = timeIn;
+      this.timeOut = timeOut;
+      this.am = am
+      this.pm = pm
+      this.activity = activity
+      this.total = total
+  }
+ 
 }
 
 let submit = document.getElementById('submit')
@@ -15,16 +27,7 @@ console.log(submit)
 const formName = 'familyTrainingTimesheet'
 console.log('form: ' + formName)
 let newForm = {}
-let timesheet = createTimesheet()
-
-function createTimesheet() {
-  let sheet = []
-  for (i = 0; i < 6; i++) {
-    let day = new TimeEntry;
-    sheet.push(day)   
-  }
-  return sheet
-}
+let timeSheet = createTimeSheet()
 
 let staffName = document.querySelector('input#staffName')
 staffName.addEventListener('change', (e) => {
@@ -47,238 +50,123 @@ timePeriod.addEventListener('change', (e) => {
   console.log(newForm.timePeriod);
   })  
 
-let date1 = document.querySelector('input#day')
-date1.addEventListener('change', (e) => {
-  timesheet[0].date = document.getElementById('day').value;
-  console.log(timesheet[0])
-})
+function createTimeSheet() {
+	let sheet = []
+  for (let i = 0; i < 14; i++) {
+    let entry = new TimeEntry()
+    sheet.push(entry)
+  }
+  return sheet
+}
 
-let timeIn1 = document.querySelector('input#in')
-timeIn1.addEventListener('change', (e) => {
-  timesheet[0].timeIn = document.getElementById('in').value;
-  console.log(timesheet[0])
-})
+//Create Event Handlers
+for (let i = 0; i < 14; i++) {
+	console.log(i)
+  dates[i] = document.getElementById(`date${i + 1}`)
+  dates[i].addEventListener('change', (e) => {
+    timeSheet[i].date = e.target.value
+  })
+  timeIns[i] = document.querySelector(`input#timeIn${i + 1}`)
+  timeIns[i].addEventListener('change', (e) => {
+    let time = e.target.value
+    if (time.test(timeRegEx)) {
+      timeIns[i].style.color = 'black'
+      timeSheet[i].timeIn = e.target.value
+      timeSheet[i].total = calculateEntryHrs(timeSheet[i].timeIn, timeSheet[i].timeOut, timeSheet[i].am, timeSheet[i].pm)
+      document.getElementById(`total${i+1}`).innerHTML = timeSheet[i].total
+    }
+    else {
+      timeIns.style.color = 'red'
+      return
+    }
+    
+  })
+  ams[i] = document.getElementById(`AM${i + 1}`)
+  ams[i].addEventListener('change', (e) => {
+    timeSheet[i].am = e.target.value
+    timeSheet[i].total = calculateEntryHrs(timeSheet[i].timeIn, timeSheet[i].timeOut, timeSheet[i].am, timeSheet[i].pm)
+    document.getElementById(`total${i+1}`).innerHTML = timeSheet[i].total
+  })
+  pms[i] = document.getElementById(`PM${i + 1}`)
+  pms[i].addEventListener('change', (e) => {
+    timeSheet[i].pm = e.target.value
+    timeSheet[i].total = calculateEntryHrs(timeSheet[i].timeIn, timeSheet[i].timeOut, timeSheet[i].am, timeSheet[i].pm)
+    document.getElementById(`total${i+1}`).innerHTML = timeSheet[i].total
+  })
 
-let timeOut1 = document.querySelector('input#out')
-timeOut1.addEventListener('change', (e) => {
-  timesheet[0].timeOut = document.getElementById('out').value;
-  console.log(timesheet[0])
-})
+  timeOuts[i] = document.querySelector(`input#timeOut${i + 1}`)
+  timeOuts[i].addEventListener('change', (e) => {
+    let time = e.target.value
+    if (time.test(timeRegEx)) {
+      timeOuts[i].style.color = 'black'
+      timeSheet[i].timeOut = e.target.value
+      timeSheet[i].total = calculateEntryHrs(timeSheet[i].timeIn, timeSheet[i].timeOut, timeSheet[i].am, timeSheet[i].pm)
+      document.getElementById(`total${i+1}`).innerHTML = timeSheet[i].total
+    }
+    else {
+      timeOuts[i].style.color = 'red'
+      return
+    }
+  })
 
-let total1 = document.querySelector('input#ttl1')
-total1.addEventListener('change', (e) => {
-  timesheet[0].total = document.getElementById('ttl1').value;
-  console.log(timesheet[0])
-})
+  PDs[i] = document.getElementById(`PD${i + 1}`)
+  PDs[i].addEventListener('change', (e) => {
+    timeSheet[i].activity == 'PD' ? timeSheet[i].activity = '' : timeSheet[i].activity = 'PD'
+  })
 
-let date2 = document.querySelector('input#day2')
-date2.addEventListener('change', (e) => {
-  timesheet[1].date = document.getElementById('day2').value;
-  console.log(timesheet[1])
-})
+  FTs[i] = document.getElementById(`FT${i + 1}`)
+  FTs[i].addEventListener('change', (e) => {
+    timeSheet[i].activity == 'FT' ? timeSheet[i].activity = '' : timeSheet[i].activity = 'FT'
+  })
 
-let timeIn2 = document.querySelector('input#in2')
-timeIn2.addEventListener('change', (e) => {
-  timesheet[1].timeIn = document.getElementById('in2').value;
-  console.log(timesheet[1])
-})
+  supers[i] = document.getElementById(`super${i + 1}`)
+  supers[i].addEventListener('change', (e) => {
+    timeSheet[i].activity == 'supervision' ? timeSheet[i].activity = '' : timeSheet[i].activity = 'supervision'
+  })
 
-let timeOut2 = document.querySelector('input#out2')
-timeOut2.addEventListener('change', (e) => {
-  timesheet[1].timeOut = document.getElementById('out2').value;
-  console.log(timesheet[1])
-})
+}
 
-let total2 = document.querySelector('input#ttl2')
-total2.addEventListener('change', (e) => {
-  timesheet[1].total = document.getElementById('ttl2').value;
-})
-
-let date3 = document.querySelector('input#day3')
-date3.addEventListener('change', (e) => {
-  timesheet[2].date = document.getElementById('day3').value;
-  console.log(timesheet[2])
-})
-
-let timeIn3 = document.querySelector('input#in3')
-timeIn3.addEventListener('change', (e) => {
-  timesheet[2].timeIn = document.getElementById('in3').value;
-  console.log(timesheet[2])
-})
-
-let timeOut3 = document.querySelector('input#out3')
-timeOut3.addEventListener('change', (e) => {
-  timesheet[2].timeOut = document.getElementById('out3').value;
-  console.log(timesheet[2])
-})
-
-let total3 = document.querySelector('input#ttl3')
-total3.addEventListener('change', (e) => {
-  timesheet[2].total = document.getElementById('ttl3').value;
-})
-
-let date4 = document.querySelector('input#day4')
-date4.addEventListener('change', (e) => {
-  timesheet[3].date = document.getElementById('day4').value;
-  console.log(timesheet[3])
-})
-
-let timeIn4 = document.querySelector('input#in4')
-timeIn4.addEventListener('change', (e) => {
-  timesheet[3].timeIn = document.getElementById('in4').value;
-  console.log(timesheet[3])
-})
-
-let timeOut4 = document.querySelector('input#out4')
-timeOut4.addEventListener('change', (e) => {
-  timesheet[3].timeOut = document.getElementById('out4').value;
-  console.log(timesheet[3])
-})
-
-let total4 = document.querySelector('input#ttl4')
-total4.addEventListener('change', (e) => {
-  timesheet[3].total = document.getElementById('ttl4').value;
-})
-
-let date5 = document.querySelector('input#day5')
-date5.addEventListener('change', (e) => {
-  timesheet[4].date = document.getElementById('day5').value;
-  console.log(timesheet[4])
-})
-
-let timeIn5 = document.querySelector('input#in5')
-timeIn5.addEventListener('change', (e) => {
-  timesheet[4].timeIn = document.getElementById('in5').value;
-  console.log(timesheet[4])
-})
-
-let timeOut5 = document.querySelector('input#out5')
-timeOut5.addEventListener('change', (e) => {
-  timesheet[4].timeOut = document.getElementById('out5').value;
-  console.log(timesheet[4])
-})
-
-let total5 = document.querySelector('input#ttl5')
-total5.addEventListener('change', (e) => {
-  timesheet[4].total = document.getElementById('ttl5').value;
-})
-
-let date6 = document.querySelector('input#day6')
-date6.addEventListener('change', (e) => {
-  timesheet[5].date = document.getElementById('day6').value;
-  console.log(timesheet[5])
-})
-
-let timeIn6 = document.querySelector('input#in6')
-timeIn6.addEventListener('change', (e) => {
-  timesheet[5].timeIn = document.getElementById('in6').value;
-  console.log(timesheet[5])
-})
-
-let timeOut6 = document.querySelector('input#out6')
-timeOut6.addEventListener('change', (e) => {
-  timesheet[5].timeOut = document.getElementById('out6').value;
-  console.log(timesheet[5])
-})
-
-let total6 = document.querySelector('input#ttl6')
-total6.addEventListener('change', (e) => {
-  timesheet[5].total = document.getElementById('ttl6').value;
-})
-
-let PD1 = document.querySelector('input#PD1')
-PD1.addEventListener('change', (e) => {
-  timesheet[0].PD = document.getElementById('PD1').checked
-})
-
-let FT1 = document.querySelector('input#FT1')
-FT1.addEventListener('change', (e) => {
-  timesheet[0].FT = document.getElementById('FT1').checked
-})
-
-let supervision1 = document.querySelector('input#supervision1')
-supervision1.addEventListener('change', (e) => {
-  timesheet[0].supervision = document.getElementById('supervision1').checked
-})
-
-let PD2 = document.querySelector('input#PD2')
-PD2.addEventListener('change', (e) => {
-  timesheet[1].PD = document.getElementById('PD2').checked
-})
-
-let FT2 = document.querySelector('input#FT2')
-FT2.addEventListener('change', (e) => {
-  timesheet[1].FT = document.getElementById('FT2').checked
-})
-
-let supervision2 = document.querySelector('input#supervision2')
-supervision2.addEventListener('change', (e) => {
-  timesheet[1].supervision = document.getElementById('supervision2').checked
-})
-
-let PD3 = document.querySelector('input#PD3')
-PD3.addEventListener('change', (e) => {
-  timesheet[2].PD = document.getElementById('PD3').checked
-})
-
-let FT3 = document.querySelector('input#FT3')
-FT3.addEventListener('change', (e) => {
-  timesheet[2].FT = document.getElementById('FT3').checked
-})
-
-let supervision3 = document.querySelector('input#supervision3')
-supervision3.addEventListener('change', (e) => {
-  timesheet[2].supervision = document.getElementById('supervision3').checked
-})
-
-let PD4 = document.querySelector('input#PD4')
-PD4.addEventListener('change', (e) => {
-  timesheet[3].PD = document.getElementById('PD4').checked
-})
-
-let FT5 = document.querySelector('input#FT5')
-FT5.addEventListener('change', (e) => {
-  timesheet[4].FT = document.getElementById('FT5').checked
-})
-
-let supervision5 = document.querySelector('input#supervision5')
-supervision5.addEventListener('change', (e) => {
-  timesheet[4].supervision = document.getElementById('supervision5').checked
-})
-
-let PD6 = document.querySelector('input#PD6')
-PD6.addEventListener('change', (e) => {
-  timesheet[5].PD = document.getElementById('PD6').checked
-})
-
-let FT6 = document.querySelector('input#FT6')
-FT6.addEventListener('change', (e) => {
-  timesheet[5].FT = document.getElementById('FT6').checked
-})
-
-let supervision6 = document.querySelector('input#supervision6')
-supervision6.addEventListener('change', (e) => {
-  timesheet[5].supervision = document.getElementById('supervision6').checked
-})
-
-let calc = document.getElementById('calculateTtlHrs')
-calc.addEventListener('click', (e) => {
+let calc = document.getElementById('calculate')
+calc.addEventListener('click', () => {
   console.log('click')
   hours = calculateHours()
-  document.getElementById('totalHours').innerHTML = `${hours} Hours`
+  document.getElementById('finalTotal').innerHTML = `${hours} Hours`
+  newForm.timeSheet
   newForm.totalHours = hours
 })
 
+function calculateEntryHrs(timeIn, timeOut, am, pm) {
+  if(timeRegEx.test(timeIn) && timeRegEx.test(timeOut)) { 
+  let start = timeIn.parse(':');
+  let end = timeOut.parse(':');
+  let startHrs = parseInt(start[0])
+  let startMin = parseInt(start[1]);
+  let endHrs = parseInt(end[0])
+  let endMin = parseInt(end[1])
+  if (am == pm || endHrs == 12) {
+      let ttlHrs = endHrs - startHrs
+      let ttlMin = endMin - startMin
+      ttlHrs += ttlMin
+      ttlHrs = Math.floor((ttlHrs * 100 + .5))
+      return ttlHrs/100
+    }
+    let ttlHrs = 12*endHrs - startHrs
+    let ttlMin = endMin - startMin
+    ttlHrs += ttlMin
+    ttlHrs = Math.floor((ttlHrs * 100 + .5))
+    return ttlHrs/100
+} else {return 0}
+} 
+
+
 function calculateHours() {
-	console.log(timesheet)
-  let hours = 0
-  for (let i = 0; i < 6; i++) {
-    if (!timesheet[i].total) {
+	let hours = 0
+  for (let i = 0; i < 14; i++) {
+    if (!timeSheet[i].date) {
       return hours
     }
-    let time = parseFloat(timesheet[i].total)
-    console.log(hours, time)
-    hours = hours + time
+    hours += timeSheet[i].total
+    console.log(hours)
   }
   return hours
  }
@@ -359,3 +247,4 @@ async function sendNotification(id, recipient, type, priority) {
     .then(() => console.log('notice sent'))
     .catch(console.error)
 }
+
